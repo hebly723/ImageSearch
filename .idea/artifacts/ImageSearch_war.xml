@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ImageSearch:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="ImageSearch.war">
+      <element id="artifact" artifact-name="ImageSearch:war exploded" />
+    </root>
+  </artifact>
+</component>
