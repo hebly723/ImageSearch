@@ -112,15 +112,31 @@ public class Matrix {
     /**
      * 列向量数组合并为一个矩阵
      * @param matrices
+     * @param flag true为列向量，false为行向量
      * @return
      */
-    public static Matrix merge(Matrix[] matrices){
-        List<List<Double>> mlist = new ArrayList<>();
-        for (int i=0; i<matrices.length;i++)
-        {
-            mlist.add(matrices[i].getMatrixList().get(0));
+    public static Matrix merge(Matrix[] matrices, boolean flag){
+        if (flag) {
+            List<List<Double>> mlist = new ArrayList<>();
+            for (int i = 0; i < matrices.length; i++) {
+                mlist.add(matrices[i].getMatrixList().get(0));
+            }
+            return new Matrix(mlist);
         }
-        return new Matrix(mlist);
+        else
+        {
+            List<List<Double>> mlist = new ArrayList<>();
+            for (int i = 0; i< matrices[0].getWidth();i++)
+            {
+                List<Double> list = new ArrayList<>();
+                for (int j=0; j<matrices.length;j++){
+                    double r = matrices[j].getMatrixList().get(i).get(0);
+                    list.add(r);
+                }
+                mlist.add(list);
+            }
+            return new Matrix(mlist);
+        }
     }
 
     public int getWidth() {
@@ -129,7 +145,7 @@ public class Matrix {
 
     /**
      * 矩阵相乘
-     * @param matrix
+     * @param matrix 乘矩阵
      */
     public void multi(Matrix matrix){
         List<List<Double>> mlist = new ArrayList<>();
@@ -144,7 +160,7 @@ public class Matrix {
             }
             mlist.add(list);
         }
-        this.setMatrixList(mlist);
+        matrixList = mlist;
         width = getMatrixList().size();
         height = getMatrixList().get(0).size();
     }
@@ -232,16 +248,19 @@ public class Matrix {
 //        System.out.println(matrix1);
 //        matrix.plus(matrix1);
 //        System.out.println(matrix);
-        System.out.println(matrix);
+//        System.out.println(matrix);
         Matrix[] matrices = matrix.divideRow();
         for (int i=0; i<matrices.length; i++)
             System.out.println(matrices[i]);
+        Matrix[] matrices2 = matrix.divideCol();
+        for (int i=0; i<matrices2.length; i++)
+            System.out.println(matrices2[i]);
         Matrix[] matrixes = new Matrix[2];
         matrixes[0] = matrices[0];
         matrixes[1] = matrices[1];
-        Matrix newMat = Matrix.merge(matrixes);
-
-        Matrix reverMat = newMat;
+        Matrix reverMat = Matrix.merge(matrices2, true);
+        Matrix newMat = Matrix.merge(matrices, false);
+        System.out.println(newMat);
         newMat.reverse();
         System.out.println("newMat"+newMat);
 
