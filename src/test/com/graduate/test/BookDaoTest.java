@@ -22,9 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static com.graduate.tool.StringMethod.strictTrim;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 
-/**
- * Created by hisenyuan on 2017/5/3 at 19:41.
- */
 public class BookDaoTest extends BaseTest {
   static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
   private Logger logger = LoggerFactory.getLogger(this.getClass());

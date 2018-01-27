@@ -1,14 +1,12 @@
 package com.graduate.entity;
 
-import org.opencv.core.Mat;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 矩阵及其运算的封装
  */
-public class Matrix {
+public class Matrix implements Cloneable {
     private int width;
     private int height;
     private List<List<Double>> matrixList;
@@ -27,6 +25,23 @@ public class Matrix {
      * @param mlist 二维数列，元素为double
      */
     public Matrix(List<List<Double>> mlist){
+        setMatrixList(mlist);
+        width = getMatrixList().size();
+        height = getMatrixList().get(0).size();
+    }
+
+    public Matrix(double[] matrices, int N)
+    {
+        List<List<Double>> mlist = new ArrayList<>();
+        for (int i=0; i<matrices.length/N; i++)
+        {
+            List<Double> list = new ArrayList<>();
+            for (int j=0; j<N; j++)
+            {
+                list.add(matrices[i*N+j]);
+            }
+            mlist.add(list);
+        }
         setMatrixList(mlist);
         width = getMatrixList().size();
         height = getMatrixList().get(0).size();
@@ -53,12 +68,13 @@ public class Matrix {
     /**
      * 将矩阵所有元素取负
      */
-    public void negative(){
+    public void mulNumber(double k){
+
         for (int i = 0; i< matrixList.size();i++)
         {
             for (int j = 0; j < matrixList.get(i).size(); j++)
             {
-                matrixList.get(i).set(j, -matrixList.get(i).get(j));
+                matrixList.get(i).set(j, k*matrixList.get(i).get(j));
             }
         }
     }
@@ -143,6 +159,28 @@ public class Matrix {
         return width;
     }
 
+    @Override
+    public Object clone() {
+        Matrix stu = null;
+        try{
+            stu = (Matrix) super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return stu;
+    }
+
+    /**
+     * 矩阵求逆
+     * @return
+     */
+    public Matrix getInverse(){
+        Matrix matrix = this.getAdjoint();
+        double d = 1/this.getValue();
+        matrix.mulNumber(d);
+        return matrix;
+    }
+
     /**
      * 矩阵相乘
      * @param matrix 乘矩阵
@@ -181,6 +219,167 @@ public class Matrix {
         return sum;
     }
 
+
+    /**
+     * 求伴随矩阵
+     * @return
+     */
+    public Matrix getAdjoint(){
+        List<List<Double>> mlist = new ArrayList<>();
+        for (int i=0; i<this.getWidth();i++)
+        {
+            List<Double> list = new ArrayList<>();
+            for (int j=0; j<this.getHeight(); j++)
+            {
+                double d = this.getConfactor(i, j).getValue();
+                list.add(d);
+            }
+            mlist.add(list);
+        }
+        Matrix matrix = new Matrix(mlist);
+        matrix.reverse();
+        return matrix;
+    }
+
+    /**
+     * 求代数余子式
+     * @param x
+     * @param y
+     * @return
+     */
+    public Matrix getConfactor(int x, int y)
+    {
+        boolean flag = true;
+        if ((x+y)%2==1)
+        {
+            flag = false;
+        }
+        List<List<Double>> mlist = new ArrayList<>();
+        for (int i=0; i<this.getWidth();i++)
+        {
+            if (i!=x) {
+                List<Double> list = new ArrayList<>();
+                for (int j = 0; j < this.get(i).size(); j++) {
+                    if (j!=y)
+                    {
+                        double d = this.get(i).get(j);
+                        list.add(d);
+                    }
+                }
+                mlist.add(list);
+            }
+        }
+
+        Matrix answer = new Matrix(mlist);
+        if (!flag)
+        {
+            for (int i = 0; i<answer.get(0).size(); i ++)
+            {
+                answer.get(0).set(i, -answer.get(0).get(i));
+            }
+        }
+        return answer;
+    }
+
+    /**
+     * 矩阵行列式值计算
+     * @param matrix 二维数组
+     * @param N
+     * @return
+     */
+    public static double Det(double [][]matrix,int N)//计算n阶行列式（N=n-1）
+    {
+        int T0;
+        int T1;
+        int T2;
+        double Num;
+        int Cha;
+        double [][] B;
+        if(N>0)
+        {
+            Cha=0;
+            B=new double[N][N];
+            Num=0;
+            if(N==1)
+            {
+                return matrix[0][0]*matrix[1][1]-matrix[0][1]*matrix[1][0];
+            }
+            for(T0=0;T0<=N;T0++)//T0循环
+            {
+                for(T1=1;T1<=N;T1++)//T1循环
+                {
+                    for(T2=0;T2<=N-1;T2++)//T2循环
+                    {
+                        if(T2==T0)
+                        {
+                            Cha=1;
+
+                        }
+                        B[T1-1][T2]=matrix[T1][T2+Cha];
+                    }//T2循环
+                    Cha=0;
+                }//T1循环
+                Num=Num+matrix[0][T0]*Det(B,N-1)*Math.pow((-1),T0);
+            }//T0循环
+            return Num;
+        }
+        else if(N==0)
+        {
+            return matrix[0][0];
+        }
+
+        return 0;
+    }
+    /**
+     * 矩阵行列式值计算
+     * @return
+     */
+    public double getValue()//计算n阶行列式（N=n-1）
+    {
+        int T0;
+        int T1;
+        int T2;
+        double Num;
+        int N = this.getWidth()-1;
+        int Cha;
+        double [][] B;
+        if(N>0)
+        {
+            Cha=0;
+            B=new double[N][N];
+            Num=0;
+            if(N==1)
+            {
+                return this.get(0).get(0)*this.get(1).get(1)-
+                        this.get(0).get(1)*this.get(1).get(0);
+            }
+            for(T0=0;T0<=N;T0++)//T0循环
+            {
+                for(T1=1;T1<=N;T1++)//T1循环
+                {
+                    for(T2=0;T2<=N-1;T2++)//T2循环
+                    {
+                        if(T2==T0)
+                        {
+                            Cha=1;
+
+                        }
+                        B[T1-1][T2]=this.get(T1).get(T2+Cha);
+                    }//T2循环
+                    Cha=0;
+                }//T1循环
+                Num=Num+this.get(0).get(T0)*Det(B,N-1)*Math.pow((-1),T0);
+            }//T0循环
+            return Num;
+        }
+        else if(N==0)
+        {
+            return this.get(0).get(0);
+        }
+
+        return 0;
+    }
+
     public void setWidth(int width) {
         this.width = width;
     }
@@ -195,6 +394,10 @@ public class Matrix {
 
     public List<List<Double>> getMatrixList() {
         return matrixList;
+    }
+
+    public List<Double> get(int index){
+        return matrixList.get(index);
     }
 
     public void setMatrixList(List<List<Double>> matrixList) {
@@ -218,57 +421,5 @@ public class Matrix {
         char end = '}';
         str = str + end;
         return str;
-    }
-
-    /**
-     * 测试入口
-     * @param args
-     */
-    public static void main(String args[]){
-        List<List<Double>> mlist = new ArrayList<>();
-        for (int i=0; i<4; i++)
-        {
-            List<Double> list = new ArrayList<>();
-            for (int j=0; j<8; j++)
-            {
-                list.add(j+0.0);
-
-//                System.out.print(j+"\t");
-            }
-//            System.out.print(System.lineSeparator());
-            mlist.add(list);
-        }
-        Matrix matrix = new Matrix(mlist);
-//        Matrix matrix1 = new Matrix(mlist);
-//        System.out.println(matrix1);
-//        matrix1.reverse();
-//        System.out.println(matrix1);
-//        matrix.reverse();
-//        matrix.negative();
-//        System.out.println(matrix1);
-//        matrix.plus(matrix1);
-//        System.out.println(matrix);
-//        System.out.println(matrix);
-        Matrix[] matrices = matrix.divideRow();
-        for (int i=0; i<matrices.length; i++)
-            System.out.println(matrices[i]);
-        Matrix[] matrices2 = matrix.divideCol();
-        for (int i=0; i<matrices2.length; i++)
-            System.out.println(matrices2[i]);
-        Matrix[] matrixes = new Matrix[2];
-        matrixes[0] = matrices[0];
-        matrixes[1] = matrices[1];
-        Matrix reverMat = Matrix.merge(matrices2, true);
-        Matrix newMat = Matrix.merge(matrices, false);
-        System.out.println(newMat);
-        newMat.reverse();
-        System.out.println("newMat"+newMat);
-
-        System.out.println("reverMat"+reverMat);
-        newMat.multi(reverMat);
-        System.out.println(newMat);
-//        matrices[2].reverse();
-//        System.out.println(singleMulti(matrices[2], matrices[1]));
-//        System.out.println(Matrix.merge(matrices));
     }
 }

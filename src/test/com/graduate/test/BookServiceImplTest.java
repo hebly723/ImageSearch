@@ -5,9 +5,6 @@ import com.graduate.service.BookService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Created by hisenyuan on 2017/5/3 at 20:16.
- */
 public class BookServiceImplTest extends BookDaoTest {
   @Autowired
   private BookService bookService;

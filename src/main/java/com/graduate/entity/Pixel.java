@@ -1,4 +1,4 @@
-package com.graduate.tool;
+package com.graduate.entity;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
@@ -8,12 +8,12 @@ import static java.lang.Math.sqrt;
  */
 public class Pixel {
     double r, g, b;
-    Pixel() {
+    public Pixel() {
         r = 0;
         g = 0;
         b = 0;
     }
-    Pixel(double [] d)
+    public Pixel(double [] d)
     {
         r = d[0];
         g = d[1];

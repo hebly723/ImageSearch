@@ -1,6 +1,7 @@
 package com.graduate.algorithm.impl;
 
 import com.graduate.algorithm.Algorithm;
+import com.graduate.entity.Pixel;
 import com.graduate.tool.*;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -87,6 +88,7 @@ public class CVA implements Algorithm {
             }
             System.out.println();
         }
+
 
         return null;
         

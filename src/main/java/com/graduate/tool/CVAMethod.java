@@ -1,5 +1,6 @@
 package com.graduate.tool;
 
+import com.graduate.entity.Pixel;
 import org.opencv.core.Mat;
 
 /**
