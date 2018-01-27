@@ -3,7 +3,10 @@ package com.graduate.tool;
 import com.graduate.entity.Matrix;
 import org.opencv.core.Mat;
 
-public class LLEEmbed {
+/**
+ * LLE降维相关算法封装
+ */
+public class LLEArg {
     /**
      * 求与给定列向量相邻的列向量
      * @param matrix
