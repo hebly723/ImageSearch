@@ -50,25 +50,25 @@ public class Matrix implements Cloneable {
     /**
      * 求矩阵的转置
      */
-    public void reverse(){
+    public Matrix reverse(){
         List<List<Double>> mlist = new ArrayList<>();
         for (int i=0; i<height; i++)
         {
             mlist.add(new ArrayList<Double>());
             for (int j=0; j<width; j++)
             {
-                mlist.get(i).add(matrixList.get(j).get(i));
+                double d = matrixList.get(j).get(i);
+                mlist.get(i).add(d);
             }
         }
-        setMatrixList(mlist);
-        width = getMatrixList().size();
-        height = getMatrixList().get(0).size();
+        Matrix matrix = new Matrix(mlist);
+        return matrix;
     }
 
     /**
      * 将矩阵所有元素取负
      */
-    public void mulNumber(double k){
+    public Matrix mulNumber(double k){
 
         for (int i = 0; i< matrixList.size();i++)
         {
@@ -77,21 +77,26 @@ public class Matrix implements Cloneable {
                 matrixList.get(i).set(j, k*matrixList.get(i).get(j));
             }
         }
+        return this;
     }
 
     /**
      * 矩阵相加
      * @param matrix
      */
-    public void plus(Matrix matrix){
+    public Matrix plus(Matrix matrix){
         List<List<Double>> otherList = matrix.getMatrixList();
+        List<List<Double>> answer = new ArrayList<>();
         for (int i = 0; i<width; i++)
         {
+            List<Double> list = new ArrayList<>();
             for (int j = 0; j<height; j++)
             {
-                matrixList.get(i).set(j, matrixList.get(i).get(j)+otherList.get(i).get(j));
+                list.add(matrixList.get(i).get(j)+otherList.get(i).get(j));
             }
+            answer.add(list);
         }
+        return new Matrix(answer);
     }
 
     /**
@@ -115,12 +120,10 @@ public class Matrix implements Cloneable {
      * @return 矩阵数组
      */
     public Matrix[] divideRow(){
-        this.reverse();
-        Matrix[] matrices = this.divideCol();
-        this.reverse();
+        Matrix[] matrices = this.reverse().divideCol();
         for (int i=0; i<matrices.length; i++)
         {
-            matrices[i].reverse();
+            matrices[i] = matrices[i].reverse();
         }
         return matrices;
     }
@@ -175,9 +178,17 @@ public class Matrix implements Cloneable {
      * @return
      */
     public Matrix getInverse(){
-        Matrix matrix = this.getAdjoint();
-        double d = 1/this.getValue();
-        matrix.mulNumber(d);
+        Matrix matrix;
+        if (this.getWidth()>1) {
+            matrix = this.getAdjoint();
+            double d = 1 / this.getValue();
+            matrix.mulNumber(d);
+        }
+        else {
+            double[] des = new double[1];
+            des[0] = 1/this.get(0).get(0);
+            matrix = new Matrix(des, 1);
+        }
         return matrix;
     }
 
@@ -185,14 +196,15 @@ public class Matrix implements Cloneable {
      * 矩阵相乘
      * @param matrix 乘矩阵
      */
-    public void multi(Matrix matrix){
+    public Matrix multi(Matrix matrix){
         List<List<Double>> mlist = new ArrayList<>();
         Matrix[] rows = this.divideRow();
         Matrix[] cols = matrix.divideCol();
-        for (int i = 0; i<matrix.getWidth(); i++)
+        System.out.println(rows.length);
+        for (int i = 0; i<cols.length; i++)
         {
             List<Double> list = new ArrayList<>();
-            for (int j = 0; j<this.getHeight();j++)
+            for (int j = 0; j<rows.length;j++)
             {
                 list.add(Matrix.singleMulti(rows[j],cols[i]));
             }
@@ -201,6 +213,7 @@ public class Matrix implements Cloneable {
         matrixList = mlist;
         width = getMatrixList().size();
         height = getMatrixList().get(0).size();
+        return this;
     }
 
     /**
@@ -237,8 +250,8 @@ public class Matrix implements Cloneable {
             mlist.add(list);
         }
         Matrix matrix = new Matrix(mlist);
-        matrix.reverse();
-        return matrix;
+
+        return matrix.reverse();
     }
 
     /**
@@ -380,6 +393,49 @@ public class Matrix implements Cloneable {
         return 0;
     }
 
+    /**
+     * 形成k维全一列向量
+     * @param k
+     * @return
+     */
+    public static Matrix initCol(int k)
+    {
+        List<List<Double>> mlist = new ArrayList<>();
+        List<Double> list = new ArrayList<>();
+        for (int i=0; i<k; i++)
+        {
+            list.add(1.0);
+        }
+        mlist.add(list);
+        return new Matrix(mlist);
+    }
+
+
+    /**
+     * 形成k维单位矩阵
+     * @param w
+     * @param h
+     * @return
+     */
+    public static Matrix initI(int w, int h)
+    {
+        List<List<Double>> mlist = new ArrayList<>();
+
+        for (int i=0; i<w; i++)
+        {
+            List<Double> list = new ArrayList<>();
+            for (int j=0; j<h;j++) {
+                if (i!=j)
+                    list.add(0.0);
+                else
+                    list.add(1.0);
+            }
+            mlist.add(list);
+        }
+
+        return new Matrix(mlist);
+    }
+
     public void setWidth(int width) {
         this.width = width;
     }
@@ -422,4 +478,5 @@ public class Matrix implements Cloneable {
         str = str + end;
         return str;
     }
+
 }

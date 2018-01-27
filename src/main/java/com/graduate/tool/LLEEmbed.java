@@ -1,15 +1,17 @@
 package com.graduate.tool;
 
 import com.graduate.entity.Matrix;
+import org.opencv.core.Mat;
 
 public class LLEEmbed {
     /**
      * 求与给定列向量相邻的列向量
-     * @param matrices
+     * @param matrix
      * @param i 该列向量在列向量数组中的下标
      * @return
      */
-    private Matrix[] neighborhood( Matrix[] matrices, int i){
+    public Matrix[] neighborhood( Matrix matrix, int i){
+        Matrix[] matrices = matrix.divideCol();
         Matrix[] answer;
         if (i>0&&i<matrices.length-1)
         {
@@ -34,9 +36,72 @@ public class LLEEmbed {
     }
 
     /**
-     *
+     * 求协方差矩阵
+     * @param matrix
+     * @param index
+     * @return
      */
-    public void getZ(){
+    public Matrix getZ(Matrix matrix, int index){
+        Matrix[] neighbor = neighborhood(matrix, index).clone();
 
+        Matrix[] answer = new Matrix[neighbor.length];
+
+        System.out.println(matrix.divideCol()[index]);
+
+        for (int i=0; i<neighbor.length;i++)
+        {
+            answer[i] = matrix.divideCol()[index].plus(neighbor[i].mulNumber(-1));
+            neighbor[i].mulNumber(-1);
+        }
+        for (int i=0; i<neighbor.length;i++)
+        System.out.println(neighbor[i]);
+
+        Matrix oz = Matrix.merge(answer, true);
+
+        return oz.reverse().multi(oz);
     }
+
+    /**
+     * 求权重系数
+     * @param matrix
+     * @param index
+     */
+    public Matrix getWI(Matrix matrix, int index){
+        Matrix z = getZ(matrix, index);
+        System.out.println("qwqw" + z +"\n"+matrix);
+        Matrix wU = (z.getInverse().multi(Matrix.initCol(z.getWidth())));
+
+        Matrix wD = (Matrix.initCol(z.getWidth()).reverse().multi(
+                        z.getInverse().multi(Matrix.initCol(z.getWidth()))));
+
+        return wU.mulNumber(1/wD.getValue());
+    }
+
+    /**
+     * 求权重系数矩阵
+     * @param matrix
+     */
+    public Matrix getW(Matrix matrix){
+        Matrix[] matrix1 = new Matrix[matrix.getWidth()];
+        for (int i=0; i<matrix.getWidth();i++)
+        {
+            matrix1[i] = getWI(matrix, i);
+        }
+        return Matrix.merge(matrix1, true);
+    }
+
+    /**
+     * 计算过渡矩阵
+     * @param matrix
+     * @return
+     */
+    public Matrix getM(Matrix matrix){
+        Matrix w = getW(matrix);
+        Matrix i = Matrix.initI(w.getWidth(), w.getHeight());
+        w.mulNumber(-1);
+        return (i.plus(w).reverse()).multi(i.plus(w));
+    }
+
+
+
 }
