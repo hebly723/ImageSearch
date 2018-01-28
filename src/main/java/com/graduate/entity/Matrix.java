@@ -1,7 +1,8 @@
 package com.graduate.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import Jama.SingularValueDecomposition;
+
+import java.util.*;
 
 /**
  * 矩阵及其运算的封装
@@ -10,6 +11,7 @@ public class Matrix implements Cloneable {
     private int width;
     private int height;
     private List<List<Double>> matrixList;
+
     public Matrix(){}
 
     /**
@@ -200,7 +202,7 @@ public class Matrix implements Cloneable {
         List<List<Double>> mlist = new ArrayList<>();
         Matrix[] rows = this.divideRow();
         Matrix[] cols = matrix.divideCol();
-        System.out.println(rows.length);
+//        System.out.println(rows.length);
         for (int i = 0; i<cols.length; i++)
         {
             List<Double> list = new ArrayList<>();
@@ -410,6 +412,93 @@ public class Matrix implements Cloneable {
         return new Matrix(mlist);
     }
 
+    /**
+     * 求矩阵特征值特征向量
+     * @return
+     */
+    public Jama.EigenvalueDecomposition getSVD(){
+
+        Jama.Matrix matrix = this.toJama();
+        SingularValueDecomposition singularValueDecomposition =  matrix.svd();
+        return matrix.eig();
+
+    }
+
+    public double[] getD(){
+        Jama.Matrix matrix = this.getSVD().getD();
+        double[] doubles = new double[this.getWidth()];
+        for (int i=0; i<doubles.length; i++)
+        {
+            doubles[i] = matrix.get(i, i);
+        }
+        return doubles;
+    }
+
+    /**
+     * 按特征值绝对值排序
+     * @Return
+     */
+    public Matrix sort(){
+        double[] doubles = this.getD();
+        Matrix[] matrices = this.getV().divideCol();
+        Map<Double, Matrix> map = new HashMap();
+        DV[] dvs = new DV[doubles.length];
+        for (int i=0; i<doubles.length;i++)
+        {
+            dvs[i] = new DV(matrices[i],doubles[i]);
+        }
+        Arrays.sort(dvs, new DVComparator());
+
+        return Matrix.merge(DV.getMatrix(dvs),true);
+    }
+
+    public Matrix getV(){
+        Jama.Matrix matrix = this.getSVD().getV();
+        List<List<Double>> mlist = new ArrayList<>();
+        for (int j=0; j<matrix.getColumnDimension();j++){
+            List<Double> list = new ArrayList<>();
+            for (int i=0; i<matrix.getRowDimension(); i++)
+            {
+                double d = matrix.get(i, j);
+                list.add(d);
+            }
+            mlist.add(list);
+        }
+        return new Matrix(mlist);
+    }
+
+    public Matrix removeCol(int index){
+        Matrix[] matrices = this.divideCol();
+        Matrix[] matrices1 = new Matrix[matrices.length-1];
+        int j=0;
+        for (int i=0; i<matrices.length;i++)
+        {
+            if (i!=index)
+            {
+                matrices1[j] = matrices[i];
+                j++;
+            }
+        }
+        return Matrix.merge(matrices1, true);
+    }
+
+    /**
+     * 转换为数组变量
+     * @return
+     */
+    public double[][] toArray(){
+        double[][]  matrices = new double[this.getWidth()][this.getHeight()];
+        for (int i=0; i< this.getWidth();i++) {
+            for (int j = 0; j < this.getHeight(); j++) {
+                matrices[i][j] = this.get(i).get(j);
+            }
+        }
+        return matrices;
+    }
+
+    public Jama.Matrix toJama(){
+        return new Jama.Matrix(this.toArray());
+    }
 
     /**
      * 形成k维单位矩阵
@@ -435,6 +524,8 @@ public class Matrix implements Cloneable {
 
         return new Matrix(mlist);
     }
+
+
 
     public void setWidth(int width) {
         this.width = width;

@@ -1,7 +1,7 @@
 package com.graduate.test;
 
 import com.graduate.entity.Matrix;
-import com.graduate.tool.LLEEmbed;
+import com.graduate.tool.LLEArg;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,11 +12,11 @@ public class LLETest {
             2, 2, 1,
             3, 4, 3
     };
-    private LLEEmbed lleEmbed;
+    private LLEArg lleEmbed;
     @Before
     public void init(){
         matrix = new Matrix(doubles, 3);
-        lleEmbed = new LLEEmbed();
+        lleEmbed = new LLEArg();
         System.out.println(matrix);
     }
     @Test
@@ -42,5 +42,9 @@ public class LLETest {
     @Test
     public void testGetM(){
         System.out.println(lleEmbed.getM(matrix));
+    }
+    @Test
+    public void testGetAnswer(){
+        System.out.println(lleEmbed.getAnswer(matrix));
     }
 }

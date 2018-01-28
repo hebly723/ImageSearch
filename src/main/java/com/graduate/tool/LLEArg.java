@@ -49,15 +49,12 @@ public class LLEArg {
 
         Matrix[] answer = new Matrix[neighbor.length];
 
-        System.out.println(matrix.divideCol()[index]);
 
         for (int i=0; i<neighbor.length;i++)
         {
             answer[i] = matrix.divideCol()[index].plus(neighbor[i].mulNumber(-1));
             neighbor[i].mulNumber(-1);
         }
-        for (int i=0; i<neighbor.length;i++)
-        System.out.println(neighbor[i]);
 
         Matrix oz = Matrix.merge(answer, true);
 
@@ -71,7 +68,6 @@ public class LLEArg {
      */
     public Matrix getWI(Matrix matrix, int index){
         Matrix z = getZ(matrix, index);
-        System.out.println("qwqw" + z +"\n"+matrix);
         Matrix wU = (z.getInverse().multi(Matrix.initCol(z.getWidth())));
 
         Matrix wD = (Matrix.initCol(z.getWidth()).reverse().multi(
@@ -105,6 +101,13 @@ public class LLEArg {
         return (i.plus(w).reverse()).multi(i.plus(w));
     }
 
+    public Matrix getAnswer(Matrix matrix){
+        Matrix matrix1 = getM(matrix);
+        System.out.println(matrix1.getV());
+        Matrix matrix3 = matrix1.getV();
+        matrix3 = matrix3.sort();
+        return matrix3.removeCol(0);
+    }
 
 
 }
