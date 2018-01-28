@@ -16,26 +16,10 @@ public class LLEArg {
     public Matrix[] neighborhood( Matrix matrix, int i){
         Matrix[] matrices = matrix.divideCol();
         Matrix[] answer;
-        if (i>0&&i<matrices.length-1)
-        {
             answer = new Matrix[2];
-            answer[0] = matrices[i-1];
-            answer[1] = matrices[i+1];
+            answer[0] = new Matrix(matrices[(i+2)%3].getMatrix().copy());
+            answer[1] = new Matrix(matrices[(i+1)%3].getMatrix().copy());
             return answer;
-        }
-        else if (i == 0&&i<matrices.length-1)
-        {
-            answer = new Matrix[1];
-            answer[0] = matrices[i+1];
-            return answer;
-        }
-        else if (i > 0&&i==matrices.length-1)
-        {
-            answer = new Matrix[1];
-            answer[0] = matrices[i-1];
-            return answer;
-        }
-        return null;
     }
 
     /**
@@ -49,16 +33,15 @@ public class LLEArg {
 
         Matrix[] answer = new Matrix[neighbor.length];
 
-
         for (int i=0; i<neighbor.length;i++)
         {
-            answer[i] = matrix.divideCol()[index].plus(neighbor[i].mulNumber(-1));
-            neighbor[i].mulNumber(-1);
+            answer[i] = matrix.divideCol()[index].plus(neighbor[i].multi(-1));
+            neighbor[i].multi(-1);
         }
 
-        Matrix oz = Matrix.merge(answer, true);
+        Matrix oz = Matrix.merge(answer);
 
-        return oz.reverse().multi(oz);
+        return oz.reverse().multi(oz).round();
     }
 
     /**
@@ -68,12 +51,12 @@ public class LLEArg {
      */
     public Matrix getWI(Matrix matrix, int index){
         Matrix z = getZ(matrix, index);
-        Matrix wU = (z.getInverse().multi(Matrix.initCol(z.getWidth())));
+        Matrix wU = (z.getInverse().multi(Matrix.initCol(2)));
 
-        Matrix wD = (Matrix.initCol(z.getWidth()).reverse().multi(
-                        z.getInverse().multi(Matrix.initCol(z.getWidth()))));
+        Matrix wD = (Matrix.initCol(2).reverse().multi(
+                        z.getInverse().multi(Matrix.initCol(2))));
 
-        return wU.mulNumber(1/wD.getValue());
+        return wU.multi(1/wD.getValue());
     }
 
     /**
@@ -81,12 +64,12 @@ public class LLEArg {
      * @param matrix
      */
     public Matrix getW(Matrix matrix){
-        Matrix[] matrix1 = new Matrix[matrix.getWidth()];
-        for (int i=0; i<matrix.getWidth();i++)
+        Matrix[] matrix1 = new Matrix[matrix.getMatrix().getColumnDimension()];
+        for (int i=0; i<matrix.getMatrix().getColumnDimension();i++)
         {
             matrix1[i] = getWI(matrix, i);
         }
-        return Matrix.merge(matrix1, true);
+        return Matrix.merge(matrix1);
     }
 
     /**
@@ -96,17 +79,22 @@ public class LLEArg {
      */
     public Matrix getM(Matrix matrix){
         Matrix w = getW(matrix);
-        Matrix i = Matrix.initI(w.getWidth(), w.getHeight());
-        w.mulNumber(-1);
-        return (i.plus(w).reverse()).multi(i.plus(w));
+        Matrix i = Matrix.initI(w.getMatrix().getRowDimension(),
+                w.getMatrix().getColumnDimension());
+//        w.multi(-1);
+        Matrix m = i.plus(w.multi(-1));
+        System.out.println(m);
+        Matrix matrix1 = (m.reverse()).multi(m);
+//        System.out.println("N\n"+matrix1);
+        return matrix1;
     }
 
     public Matrix getAnswer(Matrix matrix){
         Matrix matrix1 = getM(matrix);
-        System.out.println(matrix1.getV());
+//        System.out.println(matrix1.getV());
         Matrix matrix3 = matrix1.getV();
         matrix3 = matrix3.sort();
-        return matrix3.removeCol(0);
+        return matrix3.removeCol(0).round().reverse();
     }
 
 

@@ -9,14 +9,14 @@ import org.junit.Test;
  */
 public class MatrixTest {
     private Matrix matrix;
-    double[] doubles = {
-            1, 2, 3,
-            2, 2, 1,
-            3, 4, 3
+    double[][] doubles = {
+            {1, 2, 3},
+            {2, 2, 1},
+            {3, 4, 3}
     };
     @Before
     public void init(){
-        matrix = new Matrix(doubles, 3);
+        matrix = new Matrix(doubles);
 
         System.out.println(matrix);
     }
@@ -30,31 +30,11 @@ public class MatrixTest {
     }
 
     /**
-     * 测试伴随矩阵生成
-     */
-    @Test
-    public void testAdjoin() {
-        System.out.println(matrix.getAdjoint());
-    }
-
-    /**
-     * 测试余子式生成
-     */
-    @Test
-    public void testConfactor(){
-        for (int i=0; i<3;i++)
-            for (int j=0; j<3; j++)
-            {
-                System.out.println("A"+(i+1)+""+(j+1)+":\n"+matrix.getConfactor(i,j));
-            }
-    }
-
-    /**
      * 测试数乘
      */
     @Test
     public void TestMulNumber(){
-        System.out.println(matrix.mulNumber(2));
+        System.out.println(matrix.multi(2));
     }
 
     /**
@@ -62,12 +42,7 @@ public class MatrixTest {
      */
     @Test
     public void testValue(){
-        for (int i=0; i<3;i++)
-            for (int j=0; j<3; j++)
-            {
-                System.out.println("A"+(i+1)+""+(j+1)+":\n"+matrix.getConfactor(i,j)+
-                        " = " + matrix.getConfactor(i,j).getValue());
-            }
+        System.out.println(matrix.getValue());
     }
 
     /**
@@ -75,12 +50,14 @@ public class MatrixTest {
      */
     @Test
     public void testArrayInit() {
-        double[] doubles = {
-                1, 3, 5, 7,
-                2, 4, 6, 8,
+        double[][] doubles = {
+                {1, 3, 5, 7},
+                {2, 4, 6, 8}
         };
-        Matrix matrix2 = new Matrix(doubles, 4);
-        System.out.println(matrix2);
+        Matrix matrix2 = new Matrix(doubles);
+
+        System.out.println(matrix2 + "" +
+                matrix2.getMatrix().getRowDimension());
     }
     /**
      * 测试形成K维全一列向量
@@ -89,20 +66,46 @@ public class MatrixTest {
     public void testInitCol(){
         System.out.println(Matrix.initCol(3));
     }
+    /**
+     * 测试按列分割列向量
+     */
+    @Test
+    public void testDivideCol(){
+        Matrix[] matrices = matrix.divideCol();
+        for (int i=0; i< matrices.length; i++)
+        System.out.println(matrices[i]);
+    }
+    /**
+     * 测试按行分割行向量
+     */
+    @Test
+    public void testDivideRow(){
+        Matrix[] matrices = matrix.divideRow();
+        for (int i=0; i< matrices.length; i++)
+            System.out.println(matrices[i]);
+    }
+
     @Test
     public void testMulti(){
-        double[] doubles1 = {
-                2,
-                1,
-                3,
+        double[][] doubles1 = {
+                {2},
+                {1},
+                {3},
         };
-        double[] doubles2 = {
-                -1,2
+        double[][] doubles2 = {
+                {-1,2}
         };
-        Matrix matrix1 = new Matrix(doubles1, 3);
+        Matrix matrix1 = new Matrix(doubles1);
 
-        Matrix matrix2 = new Matrix(doubles2, 1);
+        Matrix matrix2 = new Matrix(doubles2);
         System.out.println(matrix1+"\n"+matrix2);
         System.out.println(matrix1.multi(matrix2));
+    }
+    @Test
+    public void testMerge(){
+        Matrix[] matrices = matrix.divideRow();
+        for (int i=0; i< matrices.length; i++)
+            System.out.println(matrices[i]);
+        System.out.println(Matrix.merge(matrices));
     }
 }

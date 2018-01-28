@@ -7,15 +7,15 @@ import org.junit.Test;
 
 public class LLETest {
     private Matrix matrix;
-    double[] doubles = {
-            1, 2, 3,
-            2, 2, 1,
-            3, 4, 3
+    double[][] doubles = {
+            {1, 2, 3},
+            {2, 2, 1},
+            {3, 4, 3}
     };
     private LLEArg lleEmbed;
     @Before
     public void init(){
-        matrix = new Matrix(doubles, 3);
+        matrix = new Matrix(doubles);
         lleEmbed = new LLEArg();
         System.out.println(matrix);
     }
