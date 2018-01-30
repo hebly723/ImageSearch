@@ -4,6 +4,7 @@ import com.graduate.algorithm.impl.CVA;
 import com.graduate.algorithm.impl.PHA;
 import com.graduate.algorithm.impl.PHA2;
 import com.graduate.tool.*;
+import org.junit.Test;
 import org.opencv.core.*;
 
 import java.util.ArrayList;
@@ -21,16 +22,18 @@ import static org.opencv.imgproc.Imgproc.resize;
 public class toolTest {
 
     static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
-        public static void main(String[] args) {
+    @Test
+    public void min() {
 //            progressCVA();
-            progressPHA();
+//            progressPHA();
 //            testCub();
 //            dct_test();
 //            dct_run_test();
 //            StringTest();
     }
 
-    public static void dct_run_test(){
+    @Test
+    public void dct_run_test(){
         double[][] matrix = new double[8][8];
         for (int i=1; i<9; i++)
             for (int j=1; j<9; j++)
@@ -55,22 +58,24 @@ public class toolTest {
     /**
      * 演练一下颜色向量角hash码大概的提取流程
      */
-    public static void progressCVA()
+    @Test
+    public void progressCVA()
     {
         /**
          * 获取图片
          */
         Mat srcImage = imread("src/main/resources/image/山脉.png");
-        ImageViewer srcImageViewer = new ImageViewer(srcImage, "原图");
-        srcImageViewer.imshow();
+//        ImageViewer srcImageViewer = new ImageViewer(srcImage, "原图");
+//        srcImageViewer.imshow();
         CVA cva = new CVA();
-        cva.hashString(srcImage);
+        System.out.println(cva.hashString(srcImage));
 //        DCT_Trans dct_trans = new DCT_Trans();
     }
     /**
      * 演练一下感知hash算法大概的流程
      */
-    public static void progressPHA()
+    @Test
+    public void progressPHA()
     {
         Algorithm algorithm;
         algorithm = new PHA();
@@ -95,7 +100,8 @@ public class toolTest {
 //        channel2ImageViewer.imshow();
 //        PHA.PHAProgress(channels.get(1), channels.get(2));
     }
-    public static void testCub()
+    @Test
+    public void testCub()
     {
         Mat srcImage = imread("image/1.jpg");
         Size dSize = new Size( srcImage.width()*3.1, srcImage.height()*3.1);
@@ -105,7 +111,8 @@ public class toolTest {
                 new ImageViewer( originCub, "opencv自带函数规格化结果");
         originImageView.imshow();
     }
-    public static void dct_test() {
+    @Test
+    public void dct_test() {
         Mat mat = imread("image/标准.png");
         Size dSize = new Size(mat.width(), mat.width());
         Mat originCub = new Mat(dSize, CV_32S);
@@ -146,7 +153,8 @@ public class toolTest {
 //        ImageViewer dctimageViewer = new ImageViewer(newMat, "DCT");
 //        dctimageViewer.imshow();
     }
-    public static void StringTest(){
+    @Test
+    public void StringTest(){
         String str = "自然12";
         String stl = strictTrim(str);
         System.out.println(stl);

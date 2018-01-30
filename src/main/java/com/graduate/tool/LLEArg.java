@@ -7,6 +7,12 @@ import org.opencv.core.Mat;
  * LLE降维相关算法封装
  */
 public class LLEArg {
+    private int dimention;
+    private int neighborhoodNumber;
+    public LLEArg(){
+        dimention = 2;
+        neighborhoodNumber = 2;
+    }
     /**
      * 求与给定列向量相邻的列向量
      * @param matrix
@@ -16,10 +22,19 @@ public class LLEArg {
     public Matrix[] neighborhood( Matrix matrix, int i){
         Matrix[] matrices = matrix.divideCol();
         Matrix[] answer;
-            answer = new Matrix[2];
-            answer[0] = new Matrix(matrices[(i+2)%3].getMatrix().copy());
-            answer[1] = new Matrix(matrices[(i+1)%3].getMatrix().copy());
-            return answer;
+        answer = new Matrix[neighborhoodNumber];
+        int begin = (i-neighborhoodNumber+matrices.length)%matrices.length;
+        int k=0;
+        while (k<answer.length)
+        {
+            if (begin!=i)
+            {
+                answer[k] = matrices[begin];
+                k++;
+            }
+            begin=(begin+1)%matrices.length;
+        }
+        return answer;
     }
 
     /**
@@ -40,8 +55,9 @@ public class LLEArg {
         }
 
         Matrix oz = Matrix.merge(answer);
-
-        return oz.reverse().multi(oz).round();
+        Matrix result = oz.reverse().multi(oz);
+//        System.out.println("getZ\n"+result);
+        return result.round();
     }
 
     /**
@@ -51,12 +67,13 @@ public class LLEArg {
      */
     public Matrix getWI(Matrix matrix, int index){
         Matrix z = getZ(matrix, index);
-        Matrix wU = (z.getInverse().multi(Matrix.initCol(2)));
+        Matrix wU = (z.getInverse().multi(Matrix.initCol(neighborhoodNumber)));
 
-        Matrix wD = (Matrix.initCol(2).reverse().multi(
-                        z.getInverse().multi(Matrix.initCol(2))));
+        Matrix wD = (Matrix.initCol(neighborhoodNumber).reverse().multi(
+                        z.getInverse().multi(Matrix.initCol(neighborhoodNumber))));
 
-        return wU.multi(1/wD.getValue());
+//        System.out.println("getWI"+wD);
+        return wU.multi(1/wD.getMatrix().get(0,0)).round();
     }
 
     /**
@@ -69,7 +86,8 @@ public class LLEArg {
         {
             matrix1[i] = getWI(matrix, i);
         }
-        return Matrix.merge(matrix1);
+//        System.out.println("getW");
+        return Matrix.merge(matrix1).round();
     }
 
     /**
@@ -83,10 +101,11 @@ public class LLEArg {
                 w.getMatrix().getColumnDimension());
 //        w.multi(-1);
         Matrix m = i.plus(w.multi(-1));
-        System.out.println(m);
+//        System.out.println(m);
         Matrix matrix1 = (m.reverse()).multi(m);
 //        System.out.println("N\n"+matrix1);
-        return matrix1;
+//        System.out.println("getM");
+        return matrix1.round();
     }
 
     public Matrix getAnswer(Matrix matrix){
@@ -94,8 +113,27 @@ public class LLEArg {
 //        System.out.println(matrix1.getV());
         Matrix matrix3 = matrix1.getV();
         matrix3 = matrix3.sort();
-        return matrix3.removeCol(0).round().reverse();
+//        System.out.println(matrix3);
+        Jama.Matrix matrix2 = matrix3.getMatrix().getMatrix(0,matrix3.getMatrix().getRowDimension()-1,
+                1, dimention).copy();
+
+//        System.out.println("getAnswer");
+        return new Matrix(matrix2).round().reverse();
     }
 
+    public int getDimention() {
+        return dimention;
+    }
 
+    public void setDimention(int dimention) {
+        this.dimention = dimention;
+    }
+
+    public int getNeighborhoodNumber() {
+        return neighborhoodNumber;
+    }
+
+    public void setNeighborhoodNumber(int neighborhoodNumber) {
+        this.neighborhoodNumber = neighborhoodNumber;
+    }
 }

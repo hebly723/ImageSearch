@@ -23,6 +23,17 @@ public class Matrix implements Cloneable {
         this.matrix = new Jama.Matrix(matrices);
     }
 
+    public Matrix(List<List<Double>> lists){
+        matrix = new Jama.Matrix(lists.get(0).size(), lists.size());
+        for (int i=0; i<lists.get(0).size();i++)
+        {
+            for (int j=0; j<lists.size(); j++)
+            {
+                matrix.set(i,j,lists.get(j).get(i));
+            }
+        }
+    }
+
     /**
      * 求矩阵的转置
      */
@@ -122,7 +133,12 @@ public class Matrix implements Cloneable {
      * @return
      */
     public Matrix getInverse(){
-        return new Matrix(matrix.inverse());
+//        System.out.println(matrix.det());
+        if (matrix.det()!=0) {
+            return new Matrix(matrix.inverse());
+        }else{
+            return Matrix.initI(matrix.getRowDimension(), matrix.getColumnDimension());
+        }
     }
 
     /**
@@ -170,23 +186,29 @@ public class Matrix implements Cloneable {
         }
         return doubles;
     }
-
+//
     public Matrix round(){
         double[][] doubles = matrix.getArray();
         for (int i=0; i<doubles.length;i++)
         {
             for (int j=0; j<doubles[i].length;j++)
             {
-                doubles[i][j] = roundValue(doubles[i][j],3);
+                doubles[i][j] = roundValue(doubles[i][j],2);
             }
         }
         return this;
     }
 
     public static double roundValue(double f, int newScale){
-        BigDecimal b = new BigDecimal(new Double(f).toString());
-        double f1 = b.setScale(newScale, BigDecimal.ROUND_HALF_UP).doubleValue();
-        return f1;
+//        try {
+            BigDecimal b = new BigDecimal(new Double(f).toString());
+            double f1 = b.setScale(newScale, BigDecimal.ROUND_HALF_UP).doubleValue();
+            return f1;
+//        }catch (Exception e)
+//        {
+//            System.out.println("出错"+f);
+//        }
+//        return 0;
     }
 
     /**
@@ -196,9 +218,9 @@ public class Matrix implements Cloneable {
     public Matrix sort(){
         double[] doubles = this.getD();
         Matrix[] matrices = this.getV().divideCol();
-        System.out.println(Matrix.merge(matrices));
-        for (int i=0;i<doubles.length;i++)
-            System.out.println(doubles[i]);
+//        System.out.println(Matrix.merge(matrices));
+//        for (int i=0;i<doubles.length;i++)
+//            System.out.println(doubles[i]);
         Map<Double, Matrix> map = new HashMap();
         DV[] dvs = new DV[doubles.length];
         for (int i=0; i<doubles.length;i++)

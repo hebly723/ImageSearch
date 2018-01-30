@@ -68,7 +68,7 @@ public class CvMath {
             //随机数生成器，范围[0, i]
 //            int rand = (new Random()).nextInt(i+1);
             int rand = pass[pass.length - i];
-            System.out.print(" " + rand);
+//            System.out.print(" " + rand);
             List temp = originList.get(i);
             originList.set(i, originList.get(rand));
             originList.set(rand,temp);

@@ -1,6 +1,7 @@
 package com.graduate.algorithm.impl;
 
 import com.graduate.algorithm.Algorithm;
+import com.graduate.entity.Matrix;
 import com.graduate.entity.Pixel;
 import com.graduate.tool.*;
 import org.opencv.core.Mat;
@@ -9,6 +10,7 @@ import org.opencv.core.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.graduate.algorithm.impl.PHA.hexStrToBinaryStr;
 import static com.graduate.tool.CvMath.Fisher_Yates;
 import static com.graduate.tool.CvMath.getUR;
 import static com.graduate.tool.CvMath.password;
@@ -26,22 +28,23 @@ public class CVA implements Algorithm {
 //        Mat srcImage = imread("image/山脉.png");
 //        ImageViewer srcImageViewer = new ImageViewer(srcImage, "原图");
 //        srcImageViewer.imshow();
+
         /**
          * 先进行规格化，化成512×512的矩阵
          */
         Size dSize = new Size( 512, 512);
         Mat originCub = new Mat(dSize,CV_32S);
         resize( srcImage, originCub, dSize, 0, 0, INTER_CUBIC);
-        ImageViewer originImageView =
-                new ImageViewer( originCub, "opencv自带函数规格化结果");
-        originImageView.imshow();
+//        ImageViewer originImageView =
+//                new ImageViewer( originCub, "opencv自带函数规格化结果");
+//        originImageView.imshow();
         /**
          * 通过高斯滤波
          */
         Blur blur = new Blur();
         Mat blurMat = blur.GaussianBlurD(originCub,3,3,16,16);
-        ImageViewer blurImageViewer = new ImageViewer(blurMat, "滤波结果");
-        blurImageViewer.imshow();
+//        ImageViewer blurImageViewer = new ImageViewer(blurMat, "滤波结果");
+//        blurImageViewer.imshow();
         /**
          * 提取颜色向量角，生成矩阵
          */
@@ -80,22 +83,62 @@ public class CVA implements Algorithm {
         /**
          * 置乱
          */
-        System.out.println("特征矩阵列向量数"+sList.size());
+//        System.out.println("特征矩阵列向量数"+sList.size());
         Fisher_Yates(sList, password);
-        for (List<Double> dlist: sList) {
-            for (double de: dlist) {
-                System.out.print(de+" ");
-            }
-            System.out.println();
+//        for (List<Double> dlist: sList) {
+//            for (double de: dlist) {
+//                //System.out.print(de+"\t");
+//            }
+//            //System.out.println();
+//        }
+
+        Matrix matrix = new Matrix(sList);
+
+        System.out.println(matrix);
+
+        LLEArg lleArg = new LLEArg();
+        lleArg.setDimention(40);
+        lleArg.setNeighborhoodNumber(15);
+
+        Matrix lleAnswer =  lleArg.getAnswer(matrix);
+
+//        System.out.println(lleAnswer);
+
+        Quantization quantization = new Quantization(lleAnswer);
+
+//        System.out.println();
+
+        int[] comps = quantization.getHash();
+//        for (int i=0; i<booleans.length;i++)
+//            System.out.print(booleans[i]);
+
+        StringBuffer hashCode = new StringBuffer();
+        for (int i = 0; i < comps.length; i+= 4) {
+            int result = comps[i] * (int) Math.pow(2, 3) +
+                    comps[i + 1] * (int) Math.pow(2, 2) +
+                    comps[i + 2] * (int) Math.pow(2, 1) + comps[i + 2];
+            hashCode.append(Integer.toHexString(result));//二进制转为16进制
         }
+        String sourceHashCode = hashCode.toString();
 
+        return sourceHashCode;
 
-        return null;
-        
     }
 
     @Override
     public double hashCompare(String src, String newString) {
-        return 0;
+        int difference = 0;
+        int len =src.length();
+        String bSrc = hexStrToBinaryStr(src);
+        String bNew = hexStrToBinaryStr(newString);
+        System.out.println(bSrc);
+        System.out.println(bNew);
+        for (int i = 0; i < len; i++) {
+            if(bSrc.charAt(i) != bNew.charAt(i)) {
+                difference++;
+            }
+        }
+
+        return (1 - ((double)difference)/bSrc.length());
     }
 }
