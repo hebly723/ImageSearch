@@ -3,6 +3,7 @@ import com.graduate.algorithm.Algorithm;
 import com.graduate.algorithm.impl.CVA;
 import com.graduate.algorithm.impl.PHA;
 import com.graduate.algorithm.impl.PHA2;
+import com.graduate.entity.Matrix;
 import com.graduate.tool.*;
 import org.junit.Test;
 import org.opencv.core.*;
@@ -137,15 +138,15 @@ public class toolTest {
                 for (int k = 0; k < 3; k++)
                     d[k][i][j] = (channels.get(k).get(i, j))[0];
         }
-        double[][] newD = dct_trans.DCT(d[0]);
-        Size daSize = new Size(newD[0].length, newD[0].length);
+        Matrix newD = dct_trans.DCT(new Matrix(d[0]));
+        Size daSize = new Size(newD.getMatrix().getRowDimension(), newD.getMatrix().getRowDimension());
         Mat newMat = new Mat(daSize, CV_32S);
-        for (int i = 0; i < newD[0].length; i++) {
-            for (int j = 0; j < newD[0].length; j++) {
+        for (int i = 0; i < newD.getMatrix().getRowDimension(); i++) {
+            for (int j = 0; j < newD.getMatrix().getRowDimension(); j++) {
                 double[] array = new double[1];
-                array[0] = newD[i][j];
+                array[0] = newD.getMatrix().get(i,j);
                 newMat.put(i, j, array);
-                System.out.print(newD[i][j]+"   ");
+                System.out.print(newD.getMatrix().get(i,j)+"   ");
             }
             System.out.println();
         }

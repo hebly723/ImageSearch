@@ -1,9 +1,13 @@
 package com.graduate.entity;
 
 import Jama.SingularValueDecomposition;
+import org.opencv.core.Mat;
+import org.opencv.core.Size;
 
 import java.math.BigDecimal;
 import java.util.*;
+
+import static org.opencv.core.CvType.CV_32S;
 
 /**
  * 矩阵及其运算的封装
@@ -15,6 +19,24 @@ public class Matrix implements Cloneable {
     private Jama.Matrix matrix;
 
     public Matrix(Jama.Matrix matrix){
+        this.matrix = matrix;
+    }
+
+    public Matrix(int w ,int h)
+    {
+        Jama.Matrix matrix = new Jama.Matrix( w, h);
+        this.matrix = matrix;
+    }
+
+    public Matrix(ArrayList<double[]> arrayList){
+        Jama.Matrix matrix = new Jama.Matrix(arrayList.get(0).length, arrayList.size());
+        for (int i=0; i<arrayList.size();i++)
+        {
+            for (int j=0; j<arrayList.get(0).length;j++)
+            {
+                matrix.set(j,i,arrayList.get(i)[j]);
+            }
+        }
         this.matrix = matrix;
     }
 
@@ -193,7 +215,10 @@ public class Matrix implements Cloneable {
         {
             for (int j=0; j<doubles[i].length;j++)
             {
-                doubles[i][j] = roundValue(doubles[i][j],2);
+//                if (Double.isNaN(doubles[i][j])){
+//                    doubles[i][j] = 1.0;
+//                }else
+                    doubles[i][j] = roundValue(doubles[i][j],2);
             }
         }
         return this;
@@ -244,6 +269,22 @@ public class Matrix implements Cloneable {
             }
         }
         return new Matrix(matrix1);
+    }
+
+    public Matrix removeRow(int index){
+        Jama.Matrix matrix = new Jama.Matrix(this.getRowDimension()-1,this.getColumnDimension());
+        int k = 0;
+        for (int i=0; i<this.getRowDimension();i++)
+        {
+            if (i!=index) {
+                matrix.setMatrix(k, k, 0, this.getColumnDimension() - 1,
+                        this.matrix.getMatrix(i, i, 0, this.getColumnDimension() - 1).
+                                copy());
+
+                k++;
+            }
+        }
+        return new Matrix(matrix);
     }
 
     public Matrix removeCol(int index){
@@ -305,6 +346,56 @@ public class Matrix implements Cloneable {
         this.matrix = matrix;
     }
 
+    public int getRowDimension(){
+        return this.getMatrix().getRowDimension();
+    }
+
+    public int getColumnDimension(){
+        return this.getMatrix().getColumnDimension();
+    }
+
+    public double get(int i,int j)
+    {
+        return matrix.get(i,j);
+    }
+
+    public void set( int i, int j, double d)
+    {
+        matrix.set(i, j, d);
+    }
+
+    public static boolean isZeroMatrix(Mat matrix)
+    {
+        boolean f = true;
+        for (int i=0; i<matrix.rows();i++)
+        {
+            for (int j=0; j<matrix.cols();j++)
+            {
+                if (matrix.get(i,j)[0] < 220||matrix.get(i,j)[1] < 220||matrix.get(i,j)[2] < 220)
+                    f = false;
+            }
+        }
+        return f;
+    }
+    public static boolean isZeroMatrix(Matrix matrix)
+    {
+        boolean f = true;
+        double d = matrix.get(0,0);
+        for (int i=0; i<matrix.getRowDimension();i++)
+        {
+            for (int j=0; j<matrix.getColumnDimension();j++)
+            {
+                if (matrix.get(i,j)!=0)
+                {
+                    if (matrix.get(i,j)>0.01&&((matrix.get(i,j)>1.25*d||matrix.get(i,j)<0.75*d)))
+                        f = false;
+                }
+
+            }
+        }
+        return f;
+    }
+
     @Override
     public String toString() {
         String str =  "Matrix{" +
@@ -322,6 +413,22 @@ public class Matrix implements Cloneable {
         char end = '}';
         str = str + end;
         return str;
+    }
+
+    public static Matrix[] MatToMatrix(Mat srcImage){
+        Matrix[] matrix = new Matrix[3];
+        for (int i=0; i<matrix.length;i++)
+            matrix[i] = new Matrix(srcImage.height(), srcImage.width());
+        for (int i=0; i<srcImage.height();i++)
+        {
+            for (int j=0; j<srcImage.width();j++)
+            {
+                matrix[0].set(i,j,srcImage.get(i, j)[0]);
+                matrix[1].set(i,j,srcImage.get(i, j)[1]);
+                matrix[2].set(i,j,srcImage.get(i, j)[2]);
+            }
+        }
+        return matrix;
     }
 
 }

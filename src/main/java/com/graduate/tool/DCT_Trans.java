@@ -1,5 +1,9 @@
 package com.graduate.tool;
 
+import com.graduate.entity.Matrix;
+
+import static com.graduate.entity.Pixel.zero;
+
 public class DCT_Trans {
     private class Keys{
         int x;
@@ -26,23 +30,22 @@ public class DCT_Trans {
      * @return 变换后的矩阵数组
      */
     public double[] DCT(double[] pix, int n) {
-        double[][] iMatrix = new double[n][n];
+        double[][] icMatrix = new double[n][n];
         for(int i=0; i<n; i++) {
             for(int j=0; j<n; j++) {
-                iMatrix[i][j] = pix[i*n + j];
+                icMatrix[i][j] = pix[i*n + j];
             }
         }
-        double[][] quotient = coefficient(n);   //求系数矩阵
-        double[][] quotientT = transposingMatrix(quotient, n);  //转置系数矩阵
-
-        double[][] temp = new double[n][n];
-        temp = matrixMultiply(quotient, iMatrix, n);
-        iMatrix =  matrixMultiply(temp, quotientT, n);
-
+        Matrix iMatrix = new Matrix(icMatrix);
+        Matrix quotient = coefficient(n).round();   //求系数矩阵
+        Matrix quotientT = quotient.reverse().round();  //转置系数矩阵
+        Matrix temp;
+        temp = quotient.multi(iMatrix).round();
+        iMatrix =  temp.multi(quotientT).round();
         double newpix[] = new double[n*n];
         for(int i=0; i<n; i++) {
             for(int j=0; j<n; j++) {
-                newpix[i*n + j] = iMatrix[i][j];
+                newpix[i*n + j] = iMatrix.get(i,j);
             }
         }
         return newpix;
@@ -52,13 +55,13 @@ public class DCT_Trans {
      * @param iMatrix 原图像的数据矩阵
      * @return 变换后的矩阵数组
      */
-    public double[][] DCT(double[][] iMatrix) {
-        int n = iMatrix[0].length;
-        double[][] quotient = coefficient(n);   //求系数矩阵
-        double[][] quotientT = transposingMatrix(quotient, n);  //转置系数矩阵
-        double[][] temp = new double[n][n];
-        temp = matrixMultiply(quotient, iMatrix, n);
-        iMatrix =  matrixMultiply(temp, quotientT, n);
+    public Matrix DCT(Matrix iMatrix) {
+        iMatrix.round();
+        Matrix quotient = coefficient(iMatrix.getMatrix().getRowDimension()).round();   //求系数矩阵
+        Matrix quotientT = quotient.reverse();  //转置系数矩阵
+        Matrix temp;
+        temp = quotient.multi(iMatrix).round();
+        iMatrix =  temp.multi(quotientT).round();
 
 //        double newpix[] = new double[n*n];
 //        for(int i=0; i<n; i++) {
@@ -70,49 +73,11 @@ public class DCT_Trans {
     }
 
     /**
-     * 将二维数组中指定区域作离散余弦变换
-     * @param pix
-     * @param x0 起始点x坐标
-     * @param y0 起始点y坐标
-     * @param n  方形区域边长
-     * @return
-     */
-    public double[][] DCT(double[][] pix,
-                          int x0, int y0, int n) {
-        double[][] iMatrix = new double[n][n];
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
-                iMatrix[i][j] = pix[x0+i][y0+j];
-            }
-        }
-        double[][] quotient = coefficient(n);   //求系数矩阵
-        double[][] quotientT = transposingMatrix(quotient, n);  //转置系数矩阵
-        double[][] temp = new double[n][n];
-        temp = matrixMultiply(quotient, iMatrix, n);
-        iMatrix =  matrixMultiply(temp, quotientT, n);
-        return iMatrix;
-    }
-    /**
-     * 矩阵转置
-     * @param matrix 原矩阵
-     * @param n 矩阵(n*n)的高或宽
-     * @return 转置后的矩阵
-     */
-    private double[][]  transposingMatrix(double[][] matrix, int n) {
-        double nMatrix[][] = new double[n][n];
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
-                nMatrix[i][j] = matrix[j][i];
-            }
-        }
-        return nMatrix;
-    }
-    /**
      * 求离散余弦变换的系数矩阵
      * @param n n*n矩阵的大小
      * @return 系数矩阵
      */
-    private double[][] coefficient(int n) {
+    private Matrix coefficient(int n) {
         double[][] coeff = new double[n][n];
         double sqrt = 1.0/Math.sqrt(n);
         for(int i=0; i<n; i++) {
@@ -120,31 +85,10 @@ public class DCT_Trans {
         }
         for(int i=1; i<n; i++) {
             for(int j=0; j<n; j++) {
-                coeff[i][j] = Math.sqrt(2.0/n) * Math.cos(i*Math.PI*(j+0.5)/(double)n);
+                coeff[i][j] = Math.sqrt(2.0/n) * Math.cos(i*Math.PI*(j+0.5)/((double)n));
             }
         }
-        return coeff;
-    }
-    /**
-     * 矩阵相乘
-     * @param A 矩阵A
-     * @param B 矩阵B
-     * @param n 矩阵的大小n*n
-     * @return 结果矩阵
-     */
-    private double[][] matrixMultiply(double[][] A, double[][] B, int n) {
-        double nMatrix[][] = new double[n][n];
-        double t = 0.0;
-        for(int i=0; i<n; i++) {
-            for(int j=0; j<n; j++) {
-                t = 0;
-                for(int k=0; k<n; k++) {
-                    t += A[i][k]*B[k][j];
-                }
-                nMatrix[i][j] = t;
-            }
-        }
-        return nMatrix;
+        return new Matrix(coeff);
     }
 
     /**
@@ -278,7 +222,10 @@ public class DCT_Trans {
     {
         double[] newMatrix = new double[m];
         for (int i = 0; i < m; i++) {
-            newMatrix[i] = matrix[i];
+            if (matrix[i] == 0)
+                newMatrix[i] = zero;
+            else
+                newMatrix[i] = matrix[i];
         }
         return newMatrix;
     }
@@ -292,11 +239,14 @@ public class DCT_Trans {
         /**
          *DCT变换
          */
-        double[][] dctArray = DCT(array);
+        Matrix matrix = new Matrix(array);
+
+        Matrix dctArray = DCT(matrix);
+
         /**
          * Z字扫描
          */
-        double[] zArray = zScan(dctArray);
+        double[] zArray = zScan(dctArray.getMatrix().getArray());
         /**
          * 截取一部分，这边设置为（边长-1）/边长
          */

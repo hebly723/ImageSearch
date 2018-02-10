@@ -27,12 +27,13 @@ public class CVAMethod {
     }
     public static double[][] getCVA(Mat mat, Pixel ref){
         double[][] array= new double[mat.height()][mat.width()];
-        for(int i=0; i<mat.height();i++)
-            for (int j=0;j<mat.width();j++)
-            {
-                Pixel pixel = new Pixel(mat.get(i,j));
+        for(int i=0; i<mat.height();i++) {
+            for (int j = 0; j < mat.width(); j++) {
+                Pixel pixel = new Pixel(mat.get(i, j));
                 array[i][j] = pixel.getSin(ref);
+//                System.out.print(array[i][j] + "\t");
             }
+        }
         return array;
     }
 

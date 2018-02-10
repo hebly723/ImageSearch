@@ -139,6 +139,6 @@
   </update>
   <!--以下为自己添加的查询语句-->
   <select id="selectDump" resultMap="BaseResultMap" >
-    Select * From HashPHA Where hash In (Select hash From HashPHA Group By hash Having Count(*)>1) order by hash;
+
   </select>
 </mapper>

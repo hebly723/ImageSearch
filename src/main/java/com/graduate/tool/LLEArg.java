@@ -3,6 +3,8 @@ package com.graduate.tool;
 import com.graduate.entity.Matrix;
 import org.opencv.core.Mat;
 
+import static com.graduate.entity.Pixel.zero;
+
 /**
  * LLE降维相关算法封装
  */
@@ -44,6 +46,7 @@ public class LLEArg {
      * @return
      */
     public Matrix getZ(Matrix matrix, int index){
+//        System.out.println("matrixZ\n"+matrix);
         Matrix[] neighbor = neighborhood(matrix, index).clone();
 
         Matrix[] answer = new Matrix[neighbor.length];
@@ -55,9 +58,10 @@ public class LLEArg {
         }
 
         Matrix oz = Matrix.merge(answer);
+
         Matrix result = oz.reverse().multi(oz);
-//        System.out.println("getZ\n"+result);
-        return result.round();
+
+        return result;
     }
 
     /**
@@ -72,8 +76,13 @@ public class LLEArg {
         Matrix wD = (Matrix.initCol(neighborhoodNumber).reverse().multi(
                         z.getInverse().multi(Matrix.initCol(neighborhoodNumber))));
 
+        double k = wD.getMatrix().get(0,0);
+
+        if (k==0)
+            k = zero;
+
 //        System.out.println("getWI"+wD);
-        return wU.multi(1/wD.getMatrix().get(0,0)).round();
+        return wU.multi(1/k);
     }
 
     /**
@@ -87,7 +96,7 @@ public class LLEArg {
             matrix1[i] = getWI(matrix, i);
         }
 //        System.out.println("getW");
-        return Matrix.merge(matrix1).round();
+        return Matrix.merge(matrix1);
     }
 
     /**
@@ -105,7 +114,7 @@ public class LLEArg {
         Matrix matrix1 = (m.reverse()).multi(m);
 //        System.out.println("N\n"+matrix1);
 //        System.out.println("getM");
-        return matrix1.round();
+        return matrix1;
     }
 
     public Matrix getAnswer(Matrix matrix){
@@ -118,7 +127,7 @@ public class LLEArg {
                 1, dimention).copy();
 
 //        System.out.println("getAnswer");
-        return new Matrix(matrix2).round().reverse();
+        return new Matrix(matrix2).reverse();
     }
 
     public int getDimention() {

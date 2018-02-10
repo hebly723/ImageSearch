@@ -108,4 +108,10 @@ public class MatrixTest {
             System.out.println(matrices[i]);
         System.out.println(Matrix.merge(matrices));
     }
+    @Test
+    public void testRemoveRow(){
+        System.out.println(matrix.removeRow(0));
+        System.out.println(matrix.removeRow(1));
+        System.out.println(matrix.removeRow(2));
+    }
 }

@@ -7,6 +7,7 @@ import static java.lang.Math.sqrt;
  * 像素点
  */
 public class Pixel {
+    public static double zero = 0.0001;
     double r, g, b;
     public Pixel() {
         r = 0;
@@ -61,15 +62,14 @@ public class Pixel {
      */
     public double getSin(Pixel ref)
     {
-        return sqrt(1-
-                (
-                        pow(multiPixel(this, ref), 2)/
-                        (
-                                multiPixel(this, this)*
-                        multiPixel(ref, ref)
-                        )
-                )
-        );
+        double up =  pow(multiPixel(this, ref), 2);
+        double down = multiPixel(this, this)*
+                multiPixel(ref, ref);
+        if (down == 0)
+            down = zero;
+        double k = up/down;
+//        System.out.println(up+"|"+down);
+        return sqrt(1-k);
     }
 
 }

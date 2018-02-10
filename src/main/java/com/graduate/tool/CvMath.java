@@ -44,13 +44,17 @@ public class CvMath {
             {
                 sum += dctMat.get(j)[i];
             }
+
             ura[0] = sum/dctMat.size();
+//            System.out.println(sum);
             sum = 0;
             for (int j = 0; j < dctMat.size(); j++)
             {
                 sum += pow(dctMat.get(j)[i] - ura[0], 2);
             }
             ura[1] = sqrt(sum/(dctMat.size()-1));
+//            System.out.println(sum);
+//            System.out.println("dctMat.size()"+dctMat.size()+"\t"+ura[0]+"\t"+ura[1]);
             urList.add(ura);
         }
         return urList;
