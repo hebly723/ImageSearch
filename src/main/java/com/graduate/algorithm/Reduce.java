@@ -73,7 +73,7 @@ public class Reduce {
         boolean[] ws = new boolean[matrix.getColumnDimension()];
         boolean[] hs = new boolean[matrix.getRowDimension()];
 
-        System.out.println(matrix.divideCol()[63]);
+//        System.out.println(matrix.divideCol()[63]);
         for (int i = 0; i<matrix.getColumnDimension(); i++)
         {
             ws[i] = Matrix.isZeroMatrix(matrix.divideCol()[i]);
@@ -108,10 +108,10 @@ public class Reduce {
             if (!hs[fh])
                 break;
         }
-        System.out.println("bw"+bw+"\n"+
-                "bh"+bh+"\n"+
-                "fw"+fw+"\n"+
-                "fh"+fh+"\n");
+//        System.out.println("bw"+bw+"\n"+
+//                "bh"+bh+"\n"+
+//                "fw"+fw+"\n"+
+//                "fh"+fh+"\n");
         Mat newImage = srcImage.submat((bh*srcImage.height())/matrix.getRowDimension(),
                 ((fh+1)*srcImage.height())/matrix.getRowDimension(),
                 (bw*srcImage.width())/matrix.getColumnDimension(),

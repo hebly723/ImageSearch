@@ -51,11 +51,11 @@ public class CVA implements Algorithm {
 //            System.out.println();
 //        }
 
-        System.out.println("originImage:cols="+originImage.cols()+";rows="+originImage.rows());
+//        System.out.println("originImage:cols="+originImage.cols()+";rows="+originImage.rows());
 
         srcImage = Reduce.cut(matrix1, originImage);
 
-        System.out.println("srcImage:cols="+srcImage.cols()+";rows="+srcImage.rows());
+//        System.out.println("srcImage:cols="+srcImage.cols()+";rows="+srcImage.rows());
 
         imwrite("/home/hebly723/1.jpg", srcImage);
 
