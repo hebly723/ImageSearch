@@ -1,11 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: Administrator
-  Date: 2017/1/10
-  Time: 20:10
-  note: 使用bootstrap输出后台返回的requestScope对象
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <% String appPath = request.getContextPath(); %>
 <html>
@@ -48,29 +41,27 @@
     </div>
     <div class="row clearfix">
         <div>
-            <table class="table table-hover table-striped">
-                <thead class="col-md-12">
-                <tr>
-                    <th class="col-1">图像编号</th>
-                    <th class="col-1">图像详情</th>
-                    <th class="col-8">图像</th>
-                    <th class="col-2">操作</th>
-                </tr>
-                </thead>
-                <tbody class="col-md-12">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-3"><h3 align="center">图像编号</h3></div>
+                    <div class="col-md-3"><h3 align="center">图像详情</h3></div>
+                    <div class="col-md-3"><h3 align="center">图像</h3></div>
+                    <div class="col-md-3"><h3 align="center">操作</h3></div>
+                </div>
+                <div>
                 <c:forEach var="image" items="${requestScope.get('list')}" varStatus="status">
-                    <tr class="col-md-12">
-                        <td class="col-1">${image.id}</td>
-                        <td class="col-1">${image.detail}</td>
-                        <td class="col-8"><img class="img-responsive" src="${image.location}"></td>
-                        <td class="col-2">
+                    <div class="row">
+                        <div class="col-md-3" align="center">${image.id}</div>
+                        <div class="col-md-3" align="center">${image.detail}</div>
+                        <div class="col-md-3"><img class="img-responsive" src="${image.location}"></div>
+                        <div class="col-md-3" align="center">
                             <a href="<%=appPath%>/image/detail/${image.id}">详情</a> |
                             <a href="<%=appPath%>/image/del/${image.id}">删除</a>
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                 </c:forEach>
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

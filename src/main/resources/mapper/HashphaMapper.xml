@@ -139,6 +139,24 @@
   </update>
   <!--以下为自己添加的查询语句-->
   <select id="selectDump" resultMap="BaseResultMap" >
-
+    Select Image.id, HashCVA.hash as cvaHash, HashPHA.hash as phaHash, detail
+    From HashCVA, Image, HashPHA
+    Where Image.id = HashCVA.id and Image.id = HashPHA.id
+    and HashCVA.hash In (Select hash From HashCVA Group By hash Having Count(*)>1)
+     and HashPHA.hash In (Select hash From HashPHA Group By hash Having Count(*)>1)
+      order by HashCVA.hash;
   </select>
+
+  <select id="selectHash" resultType="com.graduate.entity.Image"
+          parameterType="com.graduate.entity.HashPack">
+    select DISTINCT Image.id, Image.detail, Image.location from Image, HashCVA, HashPHA WHERE
+    Image.id = HashCVA.id and Image.id = HashPHA.id
+    <if test="hashCva!=null">
+      and HashCVA.hash = #{hashCva,jdbcType=INTEGER}
+    </if>
+    <if test="hashPha!=null">
+      and HashPHA.hash = #{hashPha,jdbcType=INTEGER}
+    </if>
+  </select>
+
 </mapper>

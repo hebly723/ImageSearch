@@ -72,13 +72,15 @@ public class CvaDaoTest extends BaseTest {
         Hashcva hashcva = new Hashcva();
         hashcva.setId(imageDao.selectByExample(imageExample).get(0).getId());
         Algorithm algorithm = new CVA();
-        Mat mat = Reduce.cut(imread(location + "/" + eng[i - 1] + "/" + j + ".jpg"));
+        Mat mat = imread(location + "/" + eng[i - 1] + "/" + j + ".jpg");
         hashcva.setHash(algorithm.hashString(mat));
         hashcvaDao.insertSelective(hashcva);
       }
     }
 
   }
+
+
 
   @Test
   public void selectDumpPHA() {

@@ -396,6 +396,13 @@ public class Matrix implements Cloneable {
         return f;
     }
 
+    public boolean checkMatrix(){
+        return isZeroMatrix(this.divideCol()[0])||
+                isZeroMatrix(this.divideCol()[this.getColumnDimension()-1])||
+                isZeroMatrix(this.divideRow()[0])||
+                isZeroMatrix(this.divideRow()[this.getRowDimension()-1]);
+    }
+
     @Override
     public String toString() {
         String str =  "Matrix{" +

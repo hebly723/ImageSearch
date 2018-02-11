@@ -1,12 +1,12 @@
 package com.graduate.web;
 
 import com.graduate.algorithm.Algorithm;
+import com.graduate.algorithm.impl.CVA;
 import com.graduate.algorithm.impl.PHA;
+import com.graduate.dao.HashcvaDao;
 import com.graduate.dao.HashphaDao;
 import com.graduate.dao.ImageDao;
-import com.graduate.entity.Hashpha;
-import com.graduate.entity.HashphaExample;
-import com.graduate.entity.Image;
+import com.graduate.entity.*;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +33,8 @@ public class FileController {
     HashphaDao haphaDao;
     @Autowired
     ImageDao imageDao;
+    @Autowired
+    HashcvaDao hashcvaDao;
     /**
      * 文件上传功能
      * @param file
@@ -65,17 +67,16 @@ public class FileController {
     public String answer(Model model, HttpServletRequest request) throws IOException {
         Mat mat = imread((String)request.getSession().getAttribute("image"));
         File file = new File((String)request.getSession().getAttribute("image"));
+        HashPack hashPack = new HashPack();
         Algorithm algorithm = new PHA();
-        HashphaExample hashphaExample = new HashphaExample();
-        HashphaExample.Criteria criteria = hashphaExample.createCriteria();
-        criteria.andHashEqualTo(algorithm.hashString(mat));
-        List<Hashpha> hashphaList = haphaDao.selectByExample(hashphaExample);
-        List<Image> images = new ArrayList<Image>();
-        for (Hashpha hashpha:hashphaList) {
-            images.add(imageDao.selectByPrimaryKey(hashpha.getId()));
-        }
+        hashPack.setHashPha(algorithm.hashString(mat));
+        algorithm = new CVA();
+        hashPack.setHashCva(algorithm.hashString(mat));
+
+        List<Image> images = haphaDao.selectHash(hashPack);
+        model.addAttribute("image", (String)request.getSession().getAttribute("image"));
         model.addAttribute("list", images);
-        file.delete();
+//        file.delete();
         return "answer";
     }
 

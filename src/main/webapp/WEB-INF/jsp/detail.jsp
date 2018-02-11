@@ -52,7 +52,7 @@
         </div>
     </div>
     <div class="row clearfix">
-        <div class="col-md-12 column">
+        <div>
             <table class="table table-hover table-striped">
                 <thead>
                 <tr>

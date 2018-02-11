@@ -53,9 +53,34 @@ public class CVA implements Algorithm {
 
 //        System.out.println("originImage:cols="+originImage.cols()+";rows="+originImage.rows());
 
-        srcImage = Reduce.cut(matrix1, originImage);
+        int allowance = 0;
+        while (matrix1.checkMatrix()) {
+
+            srcImage = Reduce.cut(matrix1, srcImage);
+            dSize = new Size( 64, 64);
+            originCub = new Mat(dSize,CV_32S);
+            resize( srcImage, originCub, dSize, 0, 0, INTER_CUBIC);
+            /**
+             * 通过高斯滤波
+             */
+//            blur = new Blur();
+            blurMat = blur.GaussianBlurD(originCub,3,3,16,16);
+            /**
+             * 提取颜色向量角，生成矩阵
+             */
+            ref = CVAMethod.calAverage(blurMat);
+            array = CVAMethod.getCVA(blurMat, ref);
+
+            matrix1 = new Matrix(array);
+
+//            if (allowance > 50)
+//                break;
+//            allowance++;
+        }
 
 //        System.out.println("srcImage:cols="+srcImage.cols()+";rows="+srcImage.rows());
+
+        originCub = new Mat(dSize,CV_32S);
 
         imwrite("/home/hebly723/1.jpg", srcImage);
 

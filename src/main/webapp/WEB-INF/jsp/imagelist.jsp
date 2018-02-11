@@ -45,30 +45,27 @@
     </div>
     <div class="row clearfix">
         <div class="col-md-12 column">
-            <table class="table table-hover table-striped">
-                <thead>
-                <tr>
-                    <th>图书编号</th>
-                    <th>图书名字</th>
-                    <th>图书数量</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
+            <div class="row">
+                    <div class="col-md-3">图书编号</div>
+                    <div class="col-md-3">图书名字</div>
+                    <div class="col-md-3">图书数量</div>
+                    <div class="col-md-3">操作</div>
+            </div>
+                <div>
                 <c:forEach var="image" items="${requestScope.get('list')}" varStatus="status">
-                    <tr>
-                        <td>${image.id}</td>
-                        <td>${image.detail}</td>
-                        <td><img src="${image.location}"></td>
-                        <td>
+                    <div class="row">
+                        <div class="col-md-3">${image.id}</div>
+                        <div class="col-md-3">${image.detail}</div>
+                        <div class="col-md-3"><img src="${image.location}"></div>
+                        <div class="col-md-3">
                             <a href="<%=appPath%>/image/detail/${image.id}">详情</a> |
                             <a href="<%=appPath%>/image/del/${image.id}">删除</a>
-                        </td>
+                        </div>
 
-                    </tr>
+                    </div>
                 </c:forEach>
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

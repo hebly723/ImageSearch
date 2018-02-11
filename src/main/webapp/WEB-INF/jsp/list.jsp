@@ -29,8 +29,8 @@
     <div class="row clearfix">
         <div class="col-md-12 column">
             <ul class="nav nav-tabs">
-                <li class="active"><a href="<%=appPath%>/book/list">首页</a></li>
-                <li><a href="<%=appPath%>/book/detail/1000">图书具体信息</a></li>
+                <li class="active"><a href="<%=appPath%>/image/list">首页</a></li>
+                <li><a href="<%=appPath%>/image/detail/1000">图书具体信息</a></li>
                 <li><a href="<%=appPath%>/add.jsp">添加图书信息</a></li>
                 <li class="disabled"><a href="#">信息</a></li>
             </ul>
@@ -45,32 +45,29 @@
     </div>
     <div class="row clearfix">
         <div class="col-md-12 column">
-            <table class="table table-hover table-striped">
-                <thead>
-                <tr>
-                    <th>图书编号</th>
-                    <th>图书名字</th>
-                    <th>图书数量</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <c:forEach var="book" items="${requestScope.get('list')}" varStatus="status">
-                    <tr>
-                        <td>${book.bookId}</td>
-                        <td>${book.name}</td>
-                        <td>${book.number}</td>
-                        <td>
-                            <a href="<%=appPath%>/book/detail/${book.bookId}">详情</a> |
-                            <a href="<%=appPath%>/book/del/${book.bookId}">删除</a>
-                        </td>
+            <div class="row">
+                <div class="col-md-3">图书编号</div>
+                <div class="col-md-3">图书名字</div>
+                <div class="col-md-3">图书数量</div>
+                <div class="col-md-3">操作</div>
+            </div>
+            <div>
+                <c:forEach var="image" items="${requestScope.get('list')}" varStatus="status">
+                    <div class="row">
+                        <div class="col-md-3">${image.id}</div>
+                        <div class="col-md-3">${image.detail}</div>
+                        <div class="col-md-3"><img src="${image.location}"></div>
+                        <div class="col-md-3">
+                            <a href="<%=appPath%>/image/detail/${image.id}">详情</a> |
+                            <a href="<%=appPath%>/image/del/${image.id}">删除</a>
+                        </div>
 
-                    </tr>
+                    </div>
                 </c:forEach>
-                </tbody>
-            </table>
+            </div>
         </div>
     </div>
+</div>
 </div>
 
 <!-- jQuery (Bootstrap 的 JavaScript 插件需要引入 jQuery) -->

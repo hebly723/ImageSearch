@@ -140,14 +140,14 @@ public class CvaTest {
         ans = algorithm.hashString(mat);
         System.out.println(ans);
     }
-//    @Test
-//    public void getCvaPeople19()
-//    {
-//        str = "/media/hebly723/Lenovo/graduateWork/image/people/19.jpg";
-//        mat = imread(str);
-//        ans = algorithm.hashString(mat);
-//        System.out.println(ans);
-//    }
+    @Test
+    public void getCvaPeople19()
+    {
+        str = "/media/hebly723/Lenovo/graduateWork/image/people/19.jpg";
+        mat = imread(str);
+        ans = algorithm.hashString(mat);
+        System.out.println(ans);
+    }
 //    @Test
 //    public void getCvaPeople21()
 //    {
@@ -200,14 +200,14 @@ public class CvaTest {
 //        ans = algorithm.hashString(mat);
 //        System.out.println(ans);
 //    }
-    @Test
-    public void getCvaAnimal2()
-    {
-        str = "/media/hebly723/Lenovo/graduateWork/image/animal/2.jpg";
-        mat = imread(str);
-        ans = algorithm.hashString(mat);
-        System.out.println(ans);
-    }
+//    @Test
+//    public void getCvaAnimal2()
+//    {
+//        str = "/media/hebly723/Lenovo/graduateWork/image/animal/2.jpg";
+//        mat = imread(str);
+//        ans = algorithm.hashString(mat);
+//        System.out.println(ans);
+//    }
 //    @Test
 //    public void getCvaAnimal19()
 //    {
@@ -264,4 +264,15 @@ public class CvaTest {
         ans = algorithm.hashString(mat);
         System.out.println(ans);
     }
+
+//    @Test
+//    public void getCva(){
+//        str = "/home/hebly723/";
+////        for (int i=1; i<6;i++)
+////        {
+//            mat = imread(str+6+".jpg");
+//            ans = algorithm.hashString(mat);
+//            System.out.println(ans);
+////        }
+//    }
 }
